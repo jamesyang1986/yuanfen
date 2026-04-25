@@ -13,6 +13,7 @@ import com.yf.yuanfen.user.entity.User;
 import com.yf.yuanfen.user.mapper.UserMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class UserService {
@@ -21,13 +22,16 @@ public class UserService {
     private final SmsService smsService;
     private final PasswordEncoder passwordEncoder;
     private final TokenService tokenService;
+    private final FileStorageService fileStorageService;
 
     public UserService(UserMapper userMapper, SmsService smsService,
-                       PasswordEncoder passwordEncoder, TokenService tokenService) {
+                       PasswordEncoder passwordEncoder, TokenService tokenService,
+                       FileStorageService fileStorageService) {
         this.userMapper = userMapper;
         this.smsService = smsService;
         this.passwordEncoder = passwordEncoder;
         this.tokenService = tokenService;
+        this.fileStorageService = fileStorageService;
     }
 
     public TokenResponse registerByPhone(PhoneRegisterRequest req) {
@@ -90,5 +94,11 @@ public class UserService {
         user.setAvatarUrl(dto.getAvatarUrl());
         userMapper.updateProfile(user);
         return getUserProfile(userId);
+    }
+
+    public String uploadAvatar(Long userId, MultipartFile file) {
+        String avatarUrl = fileStorageService.storeAvatar(userId, file);
+        userMapper.updateAvatarUrl(userId, avatarUrl);
+        return avatarUrl;
     }
 }

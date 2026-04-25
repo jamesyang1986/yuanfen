@@ -76,4 +76,8 @@
         WHERE id = #{id}
     </update>
 
+    <update id="updateAvatarUrl">
+        UPDATE users SET avatar_url = #{avatarUrl} WHERE id = #{id}
+    </update>
+
 </mapper>

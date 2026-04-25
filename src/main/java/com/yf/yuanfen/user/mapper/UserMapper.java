@@ -24,4 +24,6 @@ public interface UserMapper {
     User selectProfileById(@Param("id") Long id);
 
     void updateProfile(User user);
+
+    void updateAvatarUrl(@Param("id") Long id, @Param("avatarUrl") String avatarUrl);
 }

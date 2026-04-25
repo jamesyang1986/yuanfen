@@ -11,6 +11,12 @@
         <result column="password_hash" property="passwordHash"/>
         <result column="created_at"    property="createdAt"/>
         <result column="updated_at"    property="updatedAt"/>
+        <result column="nickname"      property="nickname"/>
+        <result column="gender"        property="gender"/>
+        <result column="birth_date"    property="birthDate"/>
+        <result column="city"          property="city"/>
+        <result column="address"       property="address"/>
+        <result column="avatar_url"    property="avatarUrl"/>
     </resultMap>
 
     <select id="selectByPhone" resultMap="UserResultMap">
@@ -50,5 +56,24 @@
     <select id="existsByUsername" resultType="boolean">
         SELECT COUNT(1) > 0 FROM users WHERE LOWER(username) = LOWER(#{username})
     </select>
+
+    <select id="selectProfileById" resultMap="UserResultMap">
+        SELECT id, nickname, gender, birth_date, city, address, avatar_url
+        FROM users
+        WHERE id = #{id}
+    </select>
+
+    <update id="updateProfile">
+        UPDATE users
+        <set>
+            <if test="nickname != null">nickname = #{nickname},</if>
+            <if test="gender != null">gender = #{gender},</if>
+            <if test="birthDate != null">birth_date = #{birthDate},</if>
+            <if test="city != null">city = #{city},</if>
+            <if test="address != null">address = #{address},</if>
+            <if test="avatarUrl != null">avatar_url = #{avatarUrl},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
 
 </mapper>

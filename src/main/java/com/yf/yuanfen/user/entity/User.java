@@ -1,5 +1,6 @@
 package com.yf.yuanfen.user.entity;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class User {
@@ -11,6 +12,14 @@ public class User {
     private String passwordHash;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    // profile fields
+    private String nickname;
+    private Integer gender;
+    private LocalDate birthDate;
+    private String city;
+    private String address;
+    private String avatarUrl;
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -32,4 +41,22 @@ public class User {
 
     public LocalDateTime getUpdatedAt() { return updatedAt; }
     public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
+
+    public String getNickname() { return nickname; }
+    public void setNickname(String nickname) { this.nickname = nickname; }
+
+    public Integer getGender() { return gender; }
+    public void setGender(Integer gender) { this.gender = gender; }
+
+    public LocalDate getBirthDate() { return birthDate; }
+    public void setBirthDate(LocalDate birthDate) { this.birthDate = birthDate; }
+
+    public String getCity() { return city; }
+    public void setCity(String city) { this.city = city; }
+
+    public String getAddress() { return address; }
+    public void setAddress(String address) { this.address = address; }
+
+    public String getAvatarUrl() { return avatarUrl; }
+    public void setAvatarUrl(String avatarUrl) { this.avatarUrl = avatarUrl; }
 }

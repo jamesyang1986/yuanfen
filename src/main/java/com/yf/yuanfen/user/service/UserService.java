@@ -8,6 +8,7 @@ import com.yf.yuanfen.auth.service.TokenService;
 import com.yf.yuanfen.auth.sms.SmsService;
 import com.yf.yuanfen.common.exception.BizException;
 import com.yf.yuanfen.common.exception.ErrorCode;
+import com.yf.yuanfen.user.dto.UserProfileDTO;
 import com.yf.yuanfen.user.entity.User;
 import com.yf.yuanfen.user.mapper.UserMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -64,5 +65,30 @@ public class UserService {
         user.setPasswordHash(passwordEncoder.encode(req.getPassword()));
         userMapper.insert(user);
         return tokenService.generateTokenPair(user.getId());
+    }
+
+    public UserProfileDTO getUserProfile(Long userId) {
+        User user = userMapper.selectProfileById(userId);
+        UserProfileDTO dto = new UserProfileDTO();
+        dto.setNickname(user.getNickname());
+        dto.setGender(user.getGender());
+        dto.setBirthDate(UserProfileDTO.fromBirthLocalDate(user.getBirthDate()));
+        dto.setCity(user.getCity());
+        dto.setAddress(user.getAddress());
+        dto.setAvatarUrl(user.getAvatarUrl());
+        return dto;
+    }
+
+    public UserProfileDTO updateUserProfile(Long userId, UserProfileDTO dto) {
+        User user = new User();
+        user.setId(userId);
+        user.setNickname(dto.getNickname());
+        user.setGender(dto.getGender());
+        user.setBirthDate(dto.toBirthLocalDate());
+        user.setCity(dto.getCity());
+        user.setAddress(dto.getAddress());
+        user.setAvatarUrl(dto.getAvatarUrl());
+        userMapper.updateProfile(user);
+        return getUserProfile(userId);
     }
 }

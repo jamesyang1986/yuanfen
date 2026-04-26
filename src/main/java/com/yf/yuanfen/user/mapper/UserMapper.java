@@ -1,6 +1,7 @@
 package com.yf.yuanfen.user.mapper;
 
 import com.yf.yuanfen.user.entity.User;
+import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -26,4 +27,10 @@ public interface UserMapper {
     void updateProfile(User user);
 
     void updateAvatarUrl(@Param("id") Long id, @Param("avatarUrl") String avatarUrl);
+
+    List<User> listUsers(@Param("offset") int offset, @Param("size") int size);
+
+    int countUsers();
+
+    void updateLastLoginAt(@Param("id") Long id);
 }

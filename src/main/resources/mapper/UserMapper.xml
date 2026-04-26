@@ -17,6 +17,7 @@
         <result column="city"          property="city"/>
         <result column="address"       property="address"/>
         <result column="avatar_url"    property="avatarUrl"/>
+        <result column="last_login_at" property="lastLoginAt"/>
     </resultMap>
 
     <select id="selectByPhone" resultMap="UserResultMap">
@@ -78,6 +79,30 @@
 
     <update id="updateAvatarUrl">
         UPDATE users SET avatar_url = #{avatarUrl} WHERE id = #{id}
+    </update>
+
+    <resultMap id="PublicUserResultMap" type="com.yf.yuanfen.user.entity.User">
+        <id     column="id"          property="id"/>
+        <result column="nickname"    property="nickname"/>
+        <result column="avatar_url"  property="avatarUrl"/>
+        <result column="city"        property="city"/>
+        <result column="birth_date"  property="birthDate"/>
+        <result column="last_login_at" property="lastLoginAt"/>
+    </resultMap>
+
+    <select id="listUsers" resultMap="PublicUserResultMap">
+        SELECT id, nickname, avatar_url, city, birth_date, last_login_at
+        FROM users
+        ORDER BY last_login_at DESC, id DESC
+        LIMIT #{size} OFFSET #{offset}
+    </select>
+
+    <select id="countUsers" resultType="int">
+        SELECT COUNT(1) FROM users
+    </select>
+
+    <update id="updateLastLoginAt">
+        UPDATE users SET last_login_at = NOW() WHERE id = #{id}
     </update>
 
 </mapper>

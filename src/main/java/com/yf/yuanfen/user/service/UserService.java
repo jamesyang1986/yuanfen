@@ -9,11 +9,16 @@ import com.yf.yuanfen.auth.sms.SmsService;
 import com.yf.yuanfen.common.exception.BizException;
 import com.yf.yuanfen.common.exception.ErrorCode;
 import com.yf.yuanfen.user.dto.UserProfileDTO;
+import com.yf.yuanfen.user.dto.UserPublicDTO;
+import com.yf.yuanfen.user.dto.PageResult;
 import com.yf.yuanfen.user.entity.User;
 import com.yf.yuanfen.user.mapper.UserMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -100,5 +105,29 @@ public class UserService {
         String avatarUrl = fileStorageService.storeAvatar(userId, file);
         userMapper.updateAvatarUrl(userId, avatarUrl);
         return avatarUrl;
+    }
+
+    public PageResult<UserPublicDTO> listUsers(int page, int size) {
+        int offset = page * size;
+        List<User> users = userMapper.listUsers(offset, size);
+        long total = userMapper.countUsers();
+        List<UserPublicDTO> items = users.stream().map(this::toPublicDTO).collect(Collectors.toList());
+        return new PageResult<>(total, page, size, items);
+    }
+
+    public UserPublicDTO getUserById(Long id) {
+        User user = userMapper.selectProfileById(id);
+        if (user == null) throw new BizException(ErrorCode.USER_NOT_FOUND);
+        return toPublicDTO(user);
+    }
+
+    private UserPublicDTO toPublicDTO(User user) {
+        UserPublicDTO dto = new UserPublicDTO();
+        dto.setId(user.getId());
+        dto.setNickname(user.getNickname());
+        dto.setAvatarUrl(user.getAvatarUrl());
+        dto.setCity(user.getCity());
+        dto.setBirthDate(user.getBirthDate() != null ? user.getBirthDate().toString().substring(0, 7) : null);
+        return dto;
     }
 }

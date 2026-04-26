@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS `users` (
     `city`          VARCHAR(64)     CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '所在城市',
     `address`       VARCHAR(256)    CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '居住地址',
     `avatar_url`    VARCHAR(512)    CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '头像URL',
+    `last_login_at` DATETIME        DEFAULT NULL COMMENT '最后登录时间',
     PRIMARY KEY (`id`),
     UNIQUE KEY `uk_users_phone`    (`phone`),
     UNIQUE KEY `uk_users_email`    (`email`),

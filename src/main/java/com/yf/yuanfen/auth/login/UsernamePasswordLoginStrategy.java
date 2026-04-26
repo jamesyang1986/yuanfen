@@ -34,6 +34,7 @@ public class UsernamePasswordLoginStrategy implements LoginStrategy {
         if (user == null || !passwordEncoder.matches(request.getCredential(), user.getPasswordHash())) {
             throw new BizException(ErrorCode.INVALID_CREDENTIALS);
         }
+        userMapper.updateLastLoginAt(user.getId());
         return tokenService.generateTokenPair(user.getId());
     }
 }

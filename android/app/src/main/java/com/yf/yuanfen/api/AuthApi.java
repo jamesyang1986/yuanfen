@@ -6,8 +6,11 @@ import com.yf.yuanfen.dto.RefreshRequest;
 import com.yf.yuanfen.dto.TokenResponse;
 import com.yf.yuanfen.dto.UsernameRegisterRequest;
 
+import java.util.Map;
+
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.GET;
 import retrofit2.http.POST;
 
 public interface AuthApi {
@@ -23,4 +26,7 @@ public interface AuthApi {
 
     @POST("api/v1/auth/logout")
     Call<ApiResponse<Void>> logout(@Body RefreshRequest request);
+
+    @GET("api/v1/auth/wechat/auth-url")
+    Call<ApiResponse<Map<String, String>>> getWechatAuthUrl();
 }

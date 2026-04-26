@@ -17,6 +17,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.Year;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -81,10 +84,17 @@ public class UserService {
         UserProfileDTO dto = new UserProfileDTO();
         dto.setNickname(user.getNickname());
         dto.setGender(user.getGender());
-        dto.setBirthDate(UserProfileDTO.fromBirthLocalDate(user.getBirthDate()));
+        String birthDateStr = UserProfileDTO.fromBirthLocalDate(user.getBirthDate());
+        dto.setBirthDate(birthDateStr);
         dto.setCity(user.getCity());
         dto.setAddress(user.getAddress());
         dto.setAvatarUrl(user.getAvatarUrl());
+        dto.setOccupation(user.getOccupation());
+        dto.setBio(user.getBio());
+        dto.setPartnerTags(splitTags(user.getPartnerTags()));
+        dto.setAge(calcAge(user.getBirthDate()));
+        dto.setWechatId(user.getWechatId());
+        dto.setQqNumber(user.getQqNumber());
         return dto;
     }
 
@@ -97,6 +107,11 @@ public class UserService {
         user.setCity(dto.getCity());
         user.setAddress(dto.getAddress());
         user.setAvatarUrl(dto.getAvatarUrl());
+        user.setOccupation(dto.getOccupation());
+        user.setBio(dto.getBio());
+        user.setPartnerTags(joinTags(dto.getPartnerTags()));
+        user.setWechatId(dto.getWechatId());
+        user.setQqNumber(dto.getQqNumber());
         userMapper.updateProfile(user);
         return getUserProfile(userId);
     }
@@ -128,6 +143,27 @@ public class UserService {
         dto.setAvatarUrl(user.getAvatarUrl());
         dto.setCity(user.getCity());
         dto.setBirthDate(user.getBirthDate() != null ? user.getBirthDate().toString().substring(0, 7) : null);
+        dto.setAge(calcAge(user.getBirthDate()));
+        dto.setOccupation(user.getOccupation());
+        dto.setBio(user.getBio());
+        dto.setPartnerTags(splitTags(user.getPartnerTags()));
+        dto.setWechatId(user.getWechatId());
+        dto.setQqNumber(user.getQqNumber());
         return dto;
+    }
+
+    private Integer calcAge(java.time.LocalDate birthDate) {
+        if (birthDate == null) return null;
+        return Year.now().getValue() - birthDate.getYear();
+    }
+
+    private List<String> splitTags(String raw) {
+        if (raw == null || raw.isEmpty()) return Collections.emptyList();
+        return Arrays.asList(raw.split(","));
+    }
+
+    private String joinTags(List<String> tags) {
+        if (tags == null || tags.isEmpty()) return null;
+        return String.join(",", tags);
     }
 }

@@ -30,14 +30,26 @@ public class PhoneSmsLoginStrategy implements LoginStrategy {
 
     @Override
     public TokenResponse login(LoginRequest request) {
-        User user = userMapper.selectByPhone(request.getIdentifier());
-        if (user == null) {
-            throw new BizException(ErrorCode.USER_NOT_FOUND);
-        }
-        boolean valid = smsService.verifyCode(request.getIdentifier(), request.getCredential());
+        String phone = request.getIdentifier();
+        String code = request.getCredential();
+
+        boolean valid = smsService.verifyCode(phone, code);
         if (!valid) {
             throw new BizException(ErrorCode.INVALID_SMS_CODE);
         }
-        return tokenService.generateTokenPair(user.getId());
+
+        User user = userMapper.selectByPhone(phone);
+        boolean isNewUser = (user == null);
+        if (isNewUser) {
+            user = new User();
+            user.setPhone(phone);
+            userMapper.insert(user);
+        }
+
+        userMapper.updateLastLoginAt(user.getId());
+
+        TokenResponse token = tokenService.generateTokenPair(user.getId());
+        token.setNewUser(isNewUser);
+        return token;
     }
 }

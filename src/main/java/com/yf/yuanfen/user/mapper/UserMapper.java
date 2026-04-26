@@ -33,4 +33,6 @@ public interface UserMapper {
     int countUsers();
 
     void updateLastLoginAt(@Param("id") Long id);
+
+    User selectByWechatOpenid(@Param("openid") String openid);
 }

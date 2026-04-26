@@ -15,10 +15,17 @@ CREATE TABLE IF NOT EXISTS `users` (
     `address`       VARCHAR(256)    CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '居住地址',
     `avatar_url`    VARCHAR(512)    CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '头像URL',
     `last_login_at` DATETIME        DEFAULT NULL COMMENT '最后登录时间',
+    `occupation`    VARCHAR(64)     CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '职业',
+    `bio`           TEXT            CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci COMMENT '自我介绍',
+    `partner_tags`  VARCHAR(512)    CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '择偶标签(逗号分隔)',
+    `wechat_id`     VARCHAR(64)     CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '微信号',
+    `qq_number`     VARCHAR(20)     CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT 'QQ号',
+    `wechat_openid` VARCHAR(64)     CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '微信OpenID',
     PRIMARY KEY (`id`),
-    UNIQUE KEY `uk_users_phone`    (`phone`),
-    UNIQUE KEY `uk_users_email`    (`email`),
-    UNIQUE KEY `uk_users_username` (`username`)
+    UNIQUE KEY `uk_users_phone`        (`phone`),
+    UNIQUE KEY `uk_users_email`        (`email`),
+    UNIQUE KEY `uk_users_username`     (`username`),
+    UNIQUE KEY `uk_users_wechat_openid`(`wechat_openid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='用户表';
 
 -- Refresh Token 表

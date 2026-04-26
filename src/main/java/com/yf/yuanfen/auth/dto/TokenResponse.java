@@ -17,6 +17,9 @@ public class TokenResponse {
     @Schema(description = "Token 类型", example = "Bearer")
     private String tokenType = "Bearer";
 
+    @Schema(description = "是否为新用户（手机号首次登录自动注册）", example = "false")
+    private boolean newUser;
+
     public TokenResponse(String accessToken, String refreshToken, long expiresIn) {
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
@@ -27,4 +30,6 @@ public class TokenResponse {
     public String getRefreshToken() { return refreshToken; }
     public long getExpiresIn() { return expiresIn; }
     public String getTokenType() { return tokenType; }
+    public boolean isNewUser() { return newUser; }
+    public void setNewUser(boolean newUser) { this.newUser = newUser; }
 }

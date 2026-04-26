@@ -18,6 +18,12 @@
         <result column="address"       property="address"/>
         <result column="avatar_url"    property="avatarUrl"/>
         <result column="last_login_at" property="lastLoginAt"/>
+        <result column="occupation"    property="occupation"/>
+        <result column="bio"           property="bio"/>
+        <result column="partner_tags"  property="partnerTags"/>
+        <result column="wechat_id"     property="wechatId"/>
+        <result column="qq_number"     property="qqNumber"/>
+        <result column="wechat_openid" property="wechatOpenid"/>
     </resultMap>
 
     <select id="selectByPhone" resultMap="UserResultMap">
@@ -42,9 +48,16 @@
     </select>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO users (username, email, phone, password_hash)
-        VALUES (#{username}, #{email}, #{phone}, #{passwordHash})
+        INSERT INTO users (username, email, phone, password_hash, wechat_openid)
+        VALUES (#{username}, #{email}, #{phone}, #{passwordHash}, #{wechatOpenid})
     </insert>
+
+    <select id="selectByWechatOpenid" resultMap="UserResultMap">
+        SELECT id, username, email, phone, password_hash, created_at, updated_at
+        FROM users
+        WHERE wechat_openid = #{openid}
+        LIMIT 1
+    </select>
 
     <select id="existsByPhone" resultType="boolean">
         SELECT COUNT(1) > 0 FROM users WHERE phone = #{phone}
@@ -59,7 +72,8 @@
     </select>
 
     <select id="selectProfileById" resultMap="UserResultMap">
-        SELECT id, nickname, gender, birth_date, city, address, avatar_url
+        SELECT id, nickname, gender, birth_date, city, address, avatar_url, occupation, bio, partner_tags,
+               wechat_id, qq_number, wechat_openid
         FROM users
         WHERE id = #{id}
     </select>
@@ -73,6 +87,11 @@
             <if test="city != null">city = #{city},</if>
             <if test="address != null">address = #{address},</if>
             <if test="avatarUrl != null">avatar_url = #{avatarUrl},</if>
+            <if test="occupation != null">occupation = #{occupation},</if>
+            <if test="bio != null">bio = #{bio},</if>
+            <if test="partnerTags != null">partner_tags = #{partnerTags},</if>
+            <if test="wechatId != null">wechat_id = #{wechatId},</if>
+            <if test="qqNumber != null">qq_number = #{qqNumber},</if>
         </set>
         WHERE id = #{id}
     </update>

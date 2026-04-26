@@ -1,21 +1,25 @@
 package com.yf.yuanfen.activity;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
-import android.text.TextUtils;
-import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.viewpager2.adapter.FragmentStateAdapter;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.button.MaterialButton;
-import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 import com.yf.yuanfen.R;
 import com.yf.yuanfen.dto.ApiResponse;
-import com.yf.yuanfen.dto.LoginRequest;
-import com.yf.yuanfen.dto.TokenResponse;
 import com.yf.yuanfen.network.RetrofitClient;
-import com.yf.yuanfen.network.TokenManager;
+
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -23,66 +27,66 @@ import retrofit2.Response;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private TextInputEditText etUsername, etPassword;
-    private MaterialButton btnLogin;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        etUsername = findViewById(R.id.etUsername);
-        etPassword = findViewById(R.id.etPassword);
-        btnLogin = findViewById(R.id.btnLogin);
-        TextView tvGoRegister = findViewById(R.id.tvGoRegister);
+        ViewPager2 viewPager = findViewById(R.id.viewPager);
+        TabLayout tabLayout = findViewById(R.id.tabLayout);
 
-        btnLogin.setOnClickListener(v -> attemptLogin());
-        tvGoRegister.setOnClickListener(v -> {
-            startActivity(new Intent(this, RegisterActivity.class));
-        });
+        viewPager.setAdapter(new LoginPagerAdapter(this));
+        viewPager.setUserInputEnabled(false); // 禁止滑动切换，只用 Tab 点击
+
+        new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {
+            tab.setText(position == 0 ? "用户名登录" : "手机号登录");
+        }).attach();
+
+        findViewById(R.id.tvGoRegister).setOnClickListener(v ->
+                startActivity(new Intent(this, RegisterActivity.class)));
+
+        MaterialButton btnWechatLogin = findViewById(R.id.btnWechatLogin);
+        btnWechatLogin.setOnClickListener(v -> loginWithWechat());
     }
 
-    private void attemptLogin() {
-        String username = getText(etUsername);
-        String password = getText(etPassword);
+    private void loginWithWechat() {
+        RetrofitClient.authApi(this).getWechatAuthUrl()
+                .enqueue(new Callback<ApiResponse<Map<String, String>>>() {
+                    @Override
+                    public void onResponse(Call<ApiResponse<Map<String, String>>> call,
+                                           Response<ApiResponse<Map<String, String>>> response) {
+                        if (response.isSuccessful() && response.body() != null
+                                && response.body().getData() != null) {
+                            String url = response.body().getData().get("url");
+                            if (url != null) {
+                                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+                            }
+                        } else {
+                            Toast.makeText(LoginActivity.this, "获取微信授权链接失败", Toast.LENGTH_SHORT).show();
+                        }
+                    }
 
-        if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password)) {
-            toast("请输入用户名和密码");
-            return;
+                    @Override
+                    public void onFailure(Call<ApiResponse<Map<String, String>>> call, Throwable t) {
+                        Toast.makeText(LoginActivity.this, "网络错误：" + t.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+    private static class LoginPagerAdapter extends FragmentStateAdapter {
+
+        LoginPagerAdapter(FragmentActivity fa) {
+            super(fa);
         }
 
-        btnLogin.setEnabled(false);
-        RetrofitClient.authApi(this).login(
-                new LoginRequest("USERNAME_PASSWORD", username, password)
-        ).enqueue(new Callback<ApiResponse<TokenResponse>>() {
-            @Override
-            public void onResponse(Call<ApiResponse<TokenResponse>> call,
-                                   Response<ApiResponse<TokenResponse>> response) {
-                btnLogin.setEnabled(true);
-                if (response.isSuccessful() && response.body() != null) {
-                    TokenResponse token = response.body().getData();
-                    new TokenManager(LoginActivity.this)
-                            .saveTokens(token.getAccessToken(), token.getRefreshToken());
-                    startActivity(new Intent(LoginActivity.this, ProfileActivity.class));
-                    finishAffinity();
-                } else {
-                    toast("账号或密码错误");
-                }
-            }
+        @NonNull
+        @Override
+        public Fragment createFragment(int position) {
+            return position == 0 ? new UsernameLoginFragment() : new PhoneLoginFragment();
+        }
 
-            @Override
-            public void onFailure(Call<ApiResponse<TokenResponse>> call, Throwable t) {
-                btnLogin.setEnabled(true);
-                toast("网络错误：" + t.getMessage());
-            }
-        });
-    }
-
-    private String getText(TextInputEditText et) {
-        return et.getText() != null ? et.getText().toString().trim() : "";
-    }
-
-    private void toast(String msg) {
-        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+        @Override
+        public int getItemCount() {
+            return 2;
+        }
     }
 }

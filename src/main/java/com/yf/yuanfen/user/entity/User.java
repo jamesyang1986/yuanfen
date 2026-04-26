@@ -21,6 +21,12 @@ public class User {
     private String address;
     private String avatarUrl;
     private LocalDateTime lastLoginAt;
+    private String occupation;
+    private String bio;
+    private String partnerTags;
+    private String wechatId;
+    private String qqNumber;
+    private String wechatOpenid;
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -63,4 +69,22 @@ public class User {
 
     public LocalDateTime getLastLoginAt() { return lastLoginAt; }
     public void setLastLoginAt(LocalDateTime lastLoginAt) { this.lastLoginAt = lastLoginAt; }
+
+    public String getOccupation() { return occupation; }
+    public void setOccupation(String occupation) { this.occupation = occupation; }
+
+    public String getBio() { return bio; }
+    public void setBio(String bio) { this.bio = bio; }
+
+    public String getPartnerTags() { return partnerTags; }
+    public void setPartnerTags(String partnerTags) { this.partnerTags = partnerTags; }
+
+    public String getWechatId() { return wechatId; }
+    public void setWechatId(String wechatId) { this.wechatId = wechatId; }
+
+    public String getQqNumber() { return qqNumber; }
+    public void setQqNumber(String qqNumber) { this.qqNumber = qqNumber; }
+
+    public String getWechatOpenid() { return wechatOpenid; }
+    public void setWechatOpenid(String wechatOpenid) { this.wechatOpenid = wechatOpenid; }
 }

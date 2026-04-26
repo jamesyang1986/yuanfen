@@ -28,6 +28,8 @@ public enum ErrorCode {
     FILE_TYPE_NOT_SUPPORTED(400, "不支持的文件类型，仅允许 JPEG/PNG/GIF/WebP"),
     FILE_TOO_LARGE(400, "文件大小超过限制（最大 5 MB）"),
 
+    WECHAT_CODE_INVALID(400, "微信授权码无效或已过期"),
+
     INTERNAL_ERROR(500, "服务器内部错误");
 
     private final int httpStatus;

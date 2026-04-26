@@ -9,8 +9,21 @@
         </el-avatar>
         <h2 style="margin:12px 0 4px">{{ user.nickname || '未设置昵称' }}</h2>
         <div style="color:#666;font-size:14px">
-          {{ user.city || '未知' }} · {{ calcAge(user.birthDate) }}
+          {{ user.city || '未知' }} · {{ user.age != null ? user.age + '岁' : '未知' }}
         </div>
+        <div v-if="user.occupation" style="color:#999;font-size:13px;margin-top:4px">{{ user.occupation }}</div>
+      </div>
+
+      <el-divider v-if="user.bio || (user.partnerTags && user.partnerTags.length)" />
+
+      <div v-if="user.bio" style="margin-bottom:12px">
+        <div style="font-size:13px;color:#999;margin-bottom:4px">自我介绍</div>
+        <div style="font-size:14px;line-height:1.6">{{ user.bio }}</div>
+      </div>
+
+      <div v-if="user.partnerTags && user.partnerTags.length">
+        <div style="font-size:13px;color:#999;margin-bottom:8px">择偶标签</div>
+        <el-tag v-for="tag in user.partnerTags" :key="tag" style="margin:0 4px 4px 0" type="success" size="small">{{ tag }}</el-tag>
       </div>
     </el-card>
 
@@ -39,10 +52,4 @@ onMounted(async () => {
     if (e.response?.status === 404) notFound.value = true
   }
 })
-
-function calcAge(birthDate) {
-  if (!birthDate) return '未知'
-  const birthYear = parseInt(birthDate.substring(0, 4))
-  return `${new Date().getFullYear() - birthYear}岁`
-}
 </script>

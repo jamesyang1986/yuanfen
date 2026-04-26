@@ -19,6 +19,7 @@ import androidx.core.content.ContextCompat;
 import com.bumptech.glide.Glide;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.yf.yuanfen.R;
 import com.yf.yuanfen.dto.ApiResponse;
 import com.yf.yuanfen.dto.AvatarResponse;
@@ -45,7 +46,7 @@ import retrofit2.Response;
 public class ProfileActivity extends AppCompatActivity {
 
     private CircleImageView ivAvatar;
-    private TextInputEditText etNickname, etGender, etBirthDate, etCity, etAddress;
+    private TextInputEditText etNickname, etGender, etBirthDate, etCity, etAddress, etWechatId, etQqNumber;
     private MaterialButton btnSave, btnLogout;
 
     private Integer selectedGender;
@@ -71,6 +72,7 @@ public class ProfileActivity extends AppCompatActivity {
         tokenManager = new TokenManager(this);
         bindViews();
         setupListeners();
+        setupBottomNav();
         loadProfile();
     }
 
@@ -81,6 +83,8 @@ public class ProfileActivity extends AppCompatActivity {
         etBirthDate = findViewById(R.id.etBirthDate);
         etCity = findViewById(R.id.etCity);
         etAddress = findViewById(R.id.etAddress);
+        etWechatId = findViewById(R.id.etWechatId);
+        etQqNumber = findViewById(R.id.etQqNumber);
         btnSave = findViewById(R.id.btnSave);
         btnLogout = findViewById(R.id.btnLogout);
     }
@@ -102,6 +106,19 @@ public class ProfileActivity extends AppCompatActivity {
 
         // 登出
         btnLogout.setOnClickListener(v -> logout());
+    }
+
+    private void setupBottomNav() {
+        BottomNavigationView bottomNav = findViewById(R.id.bottomNav);
+        bottomNav.setSelectedItemId(R.id.nav_profile);
+        bottomNav.setOnItemSelectedListener(item -> {
+            if (item.getItemId() == R.id.nav_square) {
+                startActivity(new Intent(this, SquareActivity.class));
+                finish();
+                return true;
+            }
+            return true;
+        });
     }
 
     // ── 加载资料 ──────────────────────────────────────────────────────────────
@@ -128,6 +145,8 @@ public class ProfileActivity extends AppCompatActivity {
         setText(etNickname, p.getNickname());
         setText(etCity, p.getCity());
         setText(etAddress, p.getAddress());
+        setText(etWechatId, p.getWechatId());
+        setText(etQqNumber, p.getQqNumber());
         setText(etBirthDate, p.getBirthDate());
 
         if (p.getGender() != null) {
@@ -157,6 +176,10 @@ public class ProfileActivity extends AppCompatActivity {
         if (!TextUtils.isEmpty(address)) fields.put("address", address);
         if (!TextUtils.isEmpty(birthDate)) fields.put("birthDate", birthDate);
         if (selectedGender != null) fields.put("gender", selectedGender);
+        String wechatId = getText(etWechatId);
+        String qqNumber = getText(etQqNumber);
+        if (!TextUtils.isEmpty(wechatId)) fields.put("wechatId", wechatId);
+        if (!TextUtils.isEmpty(qqNumber)) fields.put("qqNumber", qqNumber);
 
         btnSave.setEnabled(false);
         RetrofitClient.userApi(this).updateProfile(fields)

@@ -42,7 +42,7 @@ async function submit() {
     const res = await registerByUsername(form.value.username, form.value.password)
     const { accessToken, refreshToken } = res.data.data
     auth.login(accessToken, refreshToken)
-    router.push('/profile')
+    router.push('/profile?welcome=1')
   } catch (e) {
     ElMessage.error(e.response?.data?.message || '注册失败')
   }

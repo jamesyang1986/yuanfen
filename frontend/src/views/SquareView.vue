@@ -10,7 +10,7 @@
               {{ user.nickname ? user.nickname[0] : '?' }}
             </el-avatar>
             <div class="nickname">{{ user.nickname || '未设置昵称' }}</div>
-            <div class="meta">{{ user.city || '未知' }} · {{ calcAge(user.birthDate) }}</div>
+            <div class="meta">{{ user.city || '未知' }} · {{ user.age != null ? user.age + '岁' : '未知' }}</div>
           </div>
         </el-card>
       </el-col>
@@ -61,13 +61,6 @@ async function load(page) {
 
 function onPageChange(page) {
   load(page - 1)
-}
-
-function calcAge(birthDate) {
-  if (!birthDate) return '未知'
-  const birthYear = parseInt(birthDate.substring(0, 4))
-  const age = new Date().getFullYear() - birthYear
-  return `${age}岁`
 }
 </script>
 

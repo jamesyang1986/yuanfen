@@ -3,6 +3,8 @@ package com.yf.yuanfen.network;
 import android.content.Context;
 
 import com.yf.yuanfen.api.AuthApi;
+import com.yf.yuanfen.api.SmsApi;
+import com.yf.yuanfen.api.SquareApi;
 import com.yf.yuanfen.api.UserApi;
 
 import okhttp3.OkHttpClient;
@@ -40,5 +42,13 @@ public class RetrofitClient {
 
     public static UserApi userApi(Context context) {
         return getInstance(context).create(UserApi.class);
+    }
+
+    public static SmsApi smsApi(Context context) {
+        return getInstance(context).create(SmsApi.class);
+    }
+
+    public static SquareApi squareApi(Context context) {
+        return getInstance(context).create(SquareApi.class);
     }
 }

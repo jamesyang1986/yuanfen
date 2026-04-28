@@ -44,7 +44,35 @@
 - `bio`：TEXT，最大 500 字，可为 null
 - `partnerTags`：存为逗号分隔字符串 VARCHAR(512)，DTO 以 `List<String>` 暴露，最多 5 个标签，可为 null
 - `age`：Integer，只读，由 `birthDate` 计算，`birthDate` 为 null 时返回 null
+- `wechatId`：VARCHAR(64)，用户填写的微信号，可为 null
+- `qqNumber`：VARCHAR(20)，用户填写的 QQ 号，可为 null
 
 #### Scenario: 所有字段均未填写时获取资料
 - **WHEN** 新注册用户（未填写任何 profile 信息）调用 `GET /api/v1/users/profile`
-- **THEN** 系统返回 HTTP 200，所有 profile 字段均为 null（包含新增字段和 age）
+- **THEN** 系统返回 HTTP 200，所有 profile 字段均为 null（包含新增字段 wechatId、qqNumber 和 age）
+
+### Requirement: 用户可填写微信号和 QQ 号
+已认证用户 SHALL 能够通过 `PUT /api/v1/users/profile` 填写或更新微信号和 QQ 号，供他人查看联系方式。
+
+#### Scenario: 用户更新微信号
+- **WHEN** 已认证用户发送 `PUT /api/v1/users/profile`，请求体包含 `{"wechatId": "my_wechat_id"}`
+- **THEN** 系统返回 HTTP 200，响应体中 `wechatId` 为 "my_wechat_id"
+
+#### Scenario: 用户更新 QQ 号
+- **WHEN** 已认证用户发送 `PUT /api/v1/users/profile`，请求体包含 `{"qqNumber": "123456789"}`
+- **THEN** 系统返回 HTTP 200，响应体中 `qqNumber` 为 "123456789"
+
+#### Scenario: 微信号超长校验
+- **WHEN** 已认证用户提交 `wechatId` 长度超过 64 个字符
+- **THEN** 系统返回 HTTP 400，响应体包含字段校验错误
+
+#### Scenario: QQ 号超长校验
+- **WHEN** 已认证用户提交 `qqNumber` 长度超过 20 个字符
+- **THEN** 系统返回 HTTP 400，响应体包含字段校验错误
+
+### Requirement: 用户详情页展示联系方式
+系统 SHALL 在 `GET /api/v1/users/{id}` 的公开资料响应中包含 `wechatId` 和 `qqNumber` 字段，供广场用户查看他人联系方式。
+
+#### Scenario: 他人资料页展示联系方式
+- **WHEN** 已登录用户调用 `GET /api/v1/users/{id}`，目标用户已填写微信号和 QQ 号
+- **THEN** 响应体包含 `wechatId` 和 `qqNumber` 字段
